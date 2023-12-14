@@ -11,7 +11,7 @@
 #define TIMEOUT_DURATION 1000
 #define MOUTH_TAIL_COOLDOWN 200
 
-void servoInit(Servo servo, int pin, int value);
+void servoInit(Servo servo, int pin);
 void updateBody();
 void initElectronics();
 void receiveData();
