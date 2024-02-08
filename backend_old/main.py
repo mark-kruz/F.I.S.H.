@@ -8,6 +8,7 @@ from collections import deque
 class struct(object):
     mouthPosition = 0
     bodyState = 0
+    eyeState = 0
     tailState = 0
 
 # Constants
@@ -40,7 +41,7 @@ def main():
     #connect to Arduino
     try:
         testStruct = struct
-        link = txfer.SerialTransfer('COM7')
+        link = txfer.SerialTransfer('COM4')
         link.open()
         link_state=True
         sleep(2)
@@ -84,6 +85,7 @@ def main():
                 sendSize = 0
                 sendSize = link.tx_obj(int(testStruct.mouthPosition), start_pos=sendSize)
                 sendSize = link.tx_obj(testStruct.bodyState, start_pos=sendSize)
+                sendSize = link.tx_obj(testStruct.eyeState, start_pos=sendSize)
                 sendSize = link.tx_obj(testStruct.tailState, start_pos=sendSize)
                 link.send(sendSize)
             else: warning = "Bad serial connection!"
