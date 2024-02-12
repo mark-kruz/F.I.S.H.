@@ -56,8 +56,8 @@ bool checkIfTailGood(){  //interlocks the tail to not move while the mouth is mo
   else return false;
 }
 
-void servoFlip(Servo servo, uint8_t state){ //for flipping binary servos aka tail and body
-  if (state!=0)
+void servoFlip(Servo servo, uint8_t state, bool NoOverrideVar = true){ //for flipping binary servos aka tail and body
+  if (state!=0 && NoOverrideVar)
   {
     servo.writeMicroseconds(2000);
   } else servo.writeMicroseconds(1000);
@@ -65,7 +65,7 @@ void servoFlip(Servo servo, uint8_t state){ //for flipping binary servos aka tai
 
 void updateBody() {
   servoFlip(body, (uint8_t)fishyData.bodyState); //flips out the body based on received data
-  servoFlip(tail, (uint8_t)fishyData.tailState); //flips out the tail based on received data
+  servoFlip(tail, (uint8_t)fishyData.tailState, checkIfTailGood()); //flips out the tail based on received data
   digitalWrite(EyeLEDPin, (uint8_t)fishyData.eyeState); //turn eye on or off
   mouth.writeMicroseconds(fishyData.mouthPosition); //write mouth position to mouth
 }

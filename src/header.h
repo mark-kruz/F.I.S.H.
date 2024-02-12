@@ -9,7 +9,7 @@
 #define BodyServoPin 9
 #define TailServoPin 10
 #define TIMEOUT_DURATION 1000
-#define MOUTH_TAIL_COOLDOWN 0
+#define MOUTH_TAIL_COOLDOWN 500
 
 void servoInit(Servo servo, int pin);
 void updateBody();

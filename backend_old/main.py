@@ -14,7 +14,7 @@ class struct(object):
 # Constants
 SERVO_MAX = 2000
 POWER_AT_MOUTH_FULLY_OPEN = 0.16
-AUDIO_SHORT_CODE = 'hbtn'
+AUDIO_SHORT_CODE = 'sbs'
 AUDIO_PATH_ANALYSIS = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/vocals_'+AUDIO_SHORT_CODE+'.wav'
 AUDIO_PATH_PLAYBACK = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/'+AUDIO_SHORT_CODE+'.flac'
 AUDIO_PATH_DRUMS = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/drums_'+AUDIO_SHORT_CODE+'.wav'
@@ -41,7 +41,7 @@ def main():
     #connect to Arduino
     try:
         testStruct = struct
-        link = txfer.SerialTransfer('COM4')
+        link = txfer.SerialTransfer('COM5')
         link.open()
         link_state=True
         sleep(2)
