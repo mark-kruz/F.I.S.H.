@@ -37,7 +37,7 @@ def compute_rms(samples):
     """Compute the RMS of the provided samples."""
     return np.sqrt(np.mean(samples**2))
 
-def main(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_ANALYSIS = default_AUDIO_PATH_ANALYSIS, AUDIO_PATH_DRUMS = default_AUDIO_PATH_DRUMS):
+def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_ANALYSIS = default_AUDIO_PATH_ANALYSIS, AUDIO_PATH_DRUMS = default_AUDIO_PATH_DRUMS):
     #connect to Arduino
     try:
         testStruct = struct
@@ -111,4 +111,4 @@ def main(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_ANALYSIS 
             start_time += TIME_PER_STEP * 1000
 
 if __name__ == '__main__':
-    main()
+    processAudio()

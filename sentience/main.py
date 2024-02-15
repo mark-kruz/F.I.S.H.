@@ -2,9 +2,10 @@ from openai import OpenAI
 import pyaudio
 from pathlib import Path
 import wave
+from fishInterface import processAudio
 import keyboard
 
-client = OpenAI(api_key=)
+client = OpenAI(api_key="")
 chunk = 1024
 sample_format = pyaudio.paInt16  # 16 bits per sample
 channels = 1
@@ -47,8 +48,13 @@ if input() == "Y":
     wf.close()
 
 sound = open('test.wav', "rb")
+print("Requesting transcript...")
 transcript = client.audio.transcriptions.create(model="whisper-1", file=sound)
 text = transcript.text
+print("Question: " + text)
+if 'song' in text:
+    print("Singing song...")
+    processAudio()
 #cleaned_text = client.chat.completions.create(
 #  model="gpt-4-turbo-preview",
 #  messages=[
@@ -56,19 +62,21 @@ text = transcript.text
 #    {"role": "user", "content": text},
 #  ]
 #)
-print(text)
 #print(cleaned_text.choices[0].message.content)
+print("Requesting text...")
 response = client.chat.completions.create(
-  model="gpt-3.5-turbo",
+  model="gpt-4-turbo-preview",
   messages=[
     {"role": "system", "content": "You are a digital assistant that is a mounted fish on the wall. You answer factually, but slightly comedicly and witty."},
     {"role": "user", "content": text},
   ]
 )
 speech_file_path = Path(__file__).parent / "speech.mp3"
+print("Requesting TTS...")
 response_audio = client.audio.speech.create(
-  model="tts-1",
+  model="tts-1-hd",
   voice="onyx",
   input=response.choices[0].message.content
 )
 response_audio.stream_to_file(speech_file_path)
+processAudio(speech_file_path, speech_file_path)
