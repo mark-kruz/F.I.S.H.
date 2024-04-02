@@ -15,9 +15,9 @@ class struct(object):
 SERVO_MAX = 2000
 POWER_AT_MOUTH_FULLY_OPEN = 0.16
 AUDIO_SHORT_CODE = 'sbs'
-default_AUDIO_PATH_ANALYSIS = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/vocals_'+AUDIO_SHORT_CODE+'.wav'
-default_AUDIO_PATH_PLAYBACK = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/'+AUDIO_SHORT_CODE+'.flac'
-default_AUDIO_PATH_DRUMS = 'C:/Users/xbox3/Documents/PlatformIO/Projects/singing_z-800/backend/drums_'+AUDIO_SHORT_CODE+'.wav'
+default_AUDIO_PATH_ANALYSIS = AUDIO_SHORT_CODE+'/vocals.wav'
+default_AUDIO_PATH_PLAYBACK = AUDIO_SHORT_CODE+'/sbs.mp3'
+default_AUDIO_PATH_DRUMS = AUDIO_SHORT_CODE+'/drums.wav'
 TIME_PER_STEP = 0.02  # seconds
 SMOOTHING_WINDOW_SIZE = 5  # Adjust this value based on your needs
 
@@ -70,6 +70,7 @@ def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_A
     lastBeatTime=0
     predictedNextBeat=0
     pseudoBeatNotComplete=False
+    sleep(0.1)
     while samples1 < len(y):
         if pygame.mixer.music.get_pos() - start_time >= TIME_PER_STEP * 1000:
             subset = y[int(samples0):int(samples1)]
@@ -109,6 +110,9 @@ def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_A
             samples0 += samples_per_step
             samples1 += samples_per_step
             start_time += TIME_PER_STEP * 1000
-
+        elif not pygame.mixer.music.get_busy():
+            break
+    print("FishInterface exiting...")
+    pygame.mixer.quit()
 if __name__ == '__main__':
     processAudio()
