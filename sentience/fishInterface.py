@@ -14,8 +14,7 @@ class struct(object):
     tailState = 0
 
 # Constants
-SERVO_MAX = 1600
-POWER_AT_MOUTH_FULLY_OPEN = 0.30
+POWER_AT_MOUTH_FULLY_OPEN = 0.24
 AUDIO_SHORT_CODE = 'sbs'
 default_AUDIO_PATH_ANALYSIS = AUDIO_SHORT_CODE+'/vocals.wav'
 default_AUDIO_PATH_PLAYBACK = AUDIO_SHORT_CODE+'/'+AUDIO_SHORT_CODE+'.mp3'
@@ -42,7 +41,7 @@ def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_A
     #connect to Arduino
     try:
         testStruct = struct
-        link = txfer.SerialTransfer('COM6')
+        link = txfer.SerialTransfer('COM4')
         link.open()
         link_state=True
         sleep(2)

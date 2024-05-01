@@ -30,9 +30,9 @@ struct fishServo{
     int max; //max servo pos
     bool inverted; //affects the flip function, if false, flip goes neutral -> max, if true, neutral -> min
 };
-fishServo bodyServo {body, 1000, 1000, 1500, false};
-fishServo mouthServo {mouth, 1000, 1000, 1600, false};
-fishServo tailServo {tail, 1000, 1500, 1500, true}; //adjust based on needs and ranges of used servos
+fishServo bodyServo {body, BodyServoPin, 1000, 1000, 1500, false};
+fishServo mouthServo {mouth, MouthServoPin, 1000, 1000, 1600, false};
+fishServo tailServo {tail, TailServoPin, 1000, 1500, 1500, true}; //adjust based on needs and ranges of used servos
 
 void servoInit(fishServo fishServo);
 void updateBody();
