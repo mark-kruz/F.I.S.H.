@@ -5,6 +5,8 @@ from pySerialTransfer import pySerialTransfer as txfer
 from time import sleep
 from collections import deque
 
+killRequested=False #hack for multithreading so the fish isn't "sentient"
+
 class struct(object):
     mouthPosition = 0
     bodyState = 0
@@ -12,25 +14,24 @@ class struct(object):
     tailState = 0
 
 # Constants
-SERVO_MAX = 2000
-POWER_AT_MOUTH_FULLY_OPEN = 0.16
+SERVO_MAX = 1600
+POWER_AT_MOUTH_FULLY_OPEN = 0.30
 AUDIO_SHORT_CODE = 'sbs'
 default_AUDIO_PATH_ANALYSIS = AUDIO_SHORT_CODE+'/vocals.wav'
-default_AUDIO_PATH_PLAYBACK = AUDIO_SHORT_CODE+'/sbs.mp3'
+default_AUDIO_PATH_PLAYBACK = AUDIO_SHORT_CODE+'/'+AUDIO_SHORT_CODE+'.mp3'
 default_AUDIO_PATH_DRUMS = AUDIO_SHORT_CODE+'/drums.wav'
 TIME_PER_STEP = 0.02  # seconds
-SMOOTHING_WINDOW_SIZE = 1  # Adjust this value based on your needs
+SMOOTHING_WINDOW_SIZE = 5  # Adjust this value based on your needs
 
 servo_positions = deque(maxlen=SMOOTHING_WINDOW_SIZE)
 
 
-def map_average_to_microseconds(average_power):
+def map_average_to_tempServoFormat(average_power):
     """Map average power to servo microseconds."""
-    us = (1000 * average_power / POWER_AT_MOUTH_FULLY_OPEN) + 1000
-    us = max(1000, min(us, SERVO_MAX))
+    us = (10000 * average_power / POWER_AT_MOUTH_FULLY_OPEN)
     
-    if us < 1100:
-        us = 1000  # Decrease servo chatter at low amplitudes
+    if us < 1000:
+        us = 0  # Decrease servo chatter at low amplitudes
     return us
 
 def compute_rms(samples):
@@ -71,11 +72,11 @@ def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_A
     predictedNextBeat=0
     pseudoBeatNotComplete=False
     sleep(0.1)
-    while samples1 < len(y):
+    while samples1 < len(y) and not killRequested:
         if pygame.mixer.music.get_pos() - start_time >= TIME_PER_STEP * 1000:
             subset = y[int(samples0):int(samples1)]
             rms = compute_rms(subset)
-            servo_position = map_average_to_microseconds(rms)
+            servo_position = map_average_to_tempServoFormat(rms)
 
             # Add the new position to the deque and get the average
             servo_positions.append(servo_position)

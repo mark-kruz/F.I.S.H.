@@ -11,9 +11,30 @@
 #define TIMEOUT_DURATION 1000
 #define MOUTH_TAIL_COOLDOWN 500
 
-void servoInit(Servo servo, int pin);
+SerialTransfer fishTransfer;
+Servo mouth, body, tail;
+
+struct STRUCT
+{
+  long mouthPosition;
+  long bodyState; //everything must be longs, idk why, blame python, 0 or 1
+  long eyeState; //same thing, blame python
+  long tailState;
+} fishyData; //received data from Python
+
+struct fishServo{
+    Servo servo;
+    int pin;
+    int min; //minimum safe servo position
+    int neutral; //centered position
+    int max; //max servo pos
+    bool inverted; //affects the flip function, if false, flip goes neutral -> max, if true, neutral -> min
+};
+fishServo bodyServo {body, 1000, 1000, 1500, false};
+fishServo mouthServo {mouth, 1000, 1000, 1600, false};
+fishServo tailServo {tail, 1000, 1500, 1500, true}; //adjust based on needs and ranges of used servos
+
+void servoInit(fishServo fishServo);
 void updateBody();
 void initElectronics();
 void receiveData();
-SerialTransfer fishTransfer;
-Servo mouth, body, tail;

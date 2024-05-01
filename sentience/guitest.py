@@ -2,7 +2,8 @@ from openai import OpenAI
 import pyaudio
 from pathlib import Path
 import wave
-from fishInterface import processAudio
+import fishInterface
+from fishInterface import processAudio 
 from time import sleep
 
 apikey = open(Path(__file__).parent / '.key')
@@ -33,6 +34,12 @@ def button_release(event):
     global button_pressed
     button_pressed = False
 
+def program_close():
+  global window
+  global killRequested
+  fishInterface.killRequested = True
+  window.destroy()
+
 
 def setupGUI():
   window.title("F.I.S.H.")
@@ -48,6 +55,7 @@ def setupGUI():
   # Bind the button events
   button.bind("<ButtonPress-1>", button_press)
   button.bind("<ButtonRelease-1>", button_release)
+  window.protocol("WM_DELETE_WINDOW", program_close)
 
   # Start the main event loop
   window.mainloop()
@@ -114,7 +122,7 @@ def think(agent, text):
   return replyText
 
 def testMethod():
-  while True:
+  while not fishInterface.killRequested:
 
     getRecording()
     question = getTTS()

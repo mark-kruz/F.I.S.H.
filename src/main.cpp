@@ -1,13 +1,5 @@
 #include "header.h"
 
-struct STRUCT
-{
-  long mouthPosition;
-  long bodyState; //everything must be longs, idk why, blame python, 0 or 1
-  long eyeState; //same thing, blame python
-  long tailState;
-} fishyData;
-
 void setup() {
   initElectronics();
   Serial.begin(115200);
@@ -31,9 +23,9 @@ void loop() {
 void initElectronics() {
   pinMode(PowerFetPin, OUTPUT);
   pinMode(EyeLEDPin, OUTPUT); //pin config as output
-  servoInit(mouth,  MouthServoPin);
-  servoInit(body, BodyServoPin);
-  servoInit(tail, TailServoPin); //initialize Servo objects with their starting values
+  servoInit(mouthServo);
+  servoInit(bodyServo);
+  servoInit(tailServo); //initialize Servo objects with their starting values
   digitalWrite(PowerFetPin, HIGH); //start the servo power rail
   digitalWrite(EyeLEDPin, LOW); //make sure terminator eye is off
 }
@@ -43,10 +35,10 @@ void receiveData() {
   recSize = fishTransfer.rxObj(fishyData, recSize);
 }
 
-void servoInit(Servo servo, int pin) {
-  pinMode(pin, OUTPUT);
-  servo.attach(pin);
-  servo.writeMicroseconds(1000); //set servo to minimum position
+void servoInit(fishServo fishServo) {
+  pinMode(fishServo.pin, OUTPUT);
+  fishServo.servo.attach(fishServo.pin);
+  fishServo.servo.writeMicroseconds(fishServo.neutral); //set servo to minimum position
 }
 
 bool checkIfTailGood(){  //interlocks the tail to not move while the mouth is moving and for a small cooldown period after
@@ -56,16 +48,29 @@ bool checkIfTailGood(){  //interlocks the tail to not move while the mouth is mo
   else return false;
 }
 
-void servoFlip(Servo servo, uint8_t state, bool NoOverrideVar = true){ //for flipping binary servos aka tail and body
-  if (state!=0 && NoOverrideVar)
-  {
-    servo.writeMicroseconds(2000);
-  } else servo.writeMicroseconds(1000);
+void servoFlip(fishServo fishServo, uint8_t state){ //for flipping binary servos aka tail and body
+  if (state!=0)
+    {
+      if (fishServo.inverted)
+      {
+        fishServo.servo.writeMicroseconds(fishServo.min);
+      } else fishServo.servo.writeMicroseconds(fishServo.max); //if false, flip goes neutral -> max, if true, neutral -> min
+    } 
+    else fishServo.servo.writeMicroseconds(fishServo.neutral);
+}
+
+void writeServoUS(long input, fishServo fishServo) { //gets servo US value from the arbitrary 0-10000 given by the Python software
+  //0/10000 = min/max 
+  float differenceFactor = 10000/(fishServo.max-fishServo.min);
+  int realMicros = (int)(input/differenceFactor)+fishServo.min;
+  if (realMicros>fishServo.max) realMicros=fishServo.max;
+  if (realMicros<fishServo.min) realMicros=fishServo.min; //clamp to safe values
+  fishServo.servo.writeMicroseconds(realMicros);
 }
 
 void updateBody() {
-  servoFlip(body, (uint8_t)fishyData.bodyState); //flips out the body based on received data
-  servoFlip(tail, (uint8_t)fishyData.tailState, checkIfTailGood()); //flips out the tail based on received data
+  servoFlip(bodyServo, (uint8_t)fishyData.bodyState); //flips out the body based on received data
+  servoFlip(tailServo, (uint8_t)fishyData.tailState); //flips out the tail based on received data
   digitalWrite(EyeLEDPin, (uint8_t)fishyData.eyeState); //turn eye on or off
-  mouth.writeMicroseconds(fishyData.mouthPosition); //write mouth position to mouth
+  writeServoUS(fishyData.mouthPosition, mouthServo); //write mouth position to mouth
 }
