@@ -19,7 +19,7 @@ default_AUDIO_PATH_ANALYSIS = AUDIO_SHORT_CODE+'/vocals.wav'
 default_AUDIO_PATH_PLAYBACK = AUDIO_SHORT_CODE+'/sbs.mp3'
 default_AUDIO_PATH_DRUMS = AUDIO_SHORT_CODE+'/drums.wav'
 TIME_PER_STEP = 0.02  # seconds
-SMOOTHING_WINDOW_SIZE = 5  # Adjust this value based on your needs
+SMOOTHING_WINDOW_SIZE = 1  # Adjust this value based on your needs
 
 servo_positions = deque(maxlen=SMOOTHING_WINDOW_SIZE)
 
@@ -41,7 +41,7 @@ def processAudio(AUDIO_PATH_PLAYBACK = default_AUDIO_PATH_PLAYBACK, AUDIO_PATH_A
     #connect to Arduino
     try:
         testStruct = struct
-        link = txfer.SerialTransfer('COM5')
+        link = txfer.SerialTransfer('COM6')
         link.open()
         link_state=True
         sleep(2)
